@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import type { ContactExtractionRow } from "@/types/contacts";
@@ -27,6 +30,7 @@ export function WorkLogList({
   page: number;
   selectedId: string | null;
 }) {
+  const router = useRouter();
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   if (total === 0) {
@@ -60,25 +64,18 @@ export function WorkLogList({
               return (
                 <tr
                   key={r.id}
-                  className={`border-b last:border-0 ${
+                  onClick={() =>
+                    router.push(`/admin/contacts?log=${r.id}&page=${page}`)
+                  }
+                  className={`border-b last:border-0 cursor-pointer transition-colors ${
                     isSelected ? "bg-muted" : "hover:bg-muted/40"
                   }`}
                 >
                   <td className="py-2 px-3">
-                    <Link
-                      href={`/admin/contacts?log=${r.id}&page=${page}`}
-                      className="block w-full"
-                    >
-                      {formatDateTime(r.extracted_at)}
-                    </Link>
+                    {formatDateTime(r.extracted_at)}
                   </td>
                   <td className="py-2 px-3 text-right tabular-nums">
-                    <Link
-                      href={`/admin/contacts?log=${r.id}&page=${page}`}
-                      className="block w-full"
-                    >
-                      {r.items_count.toLocaleString("ko-KR")}
-                    </Link>
+                    {r.items_count.toLocaleString("ko-KR")}
                   </td>
                 </tr>
               );
@@ -86,11 +83,11 @@ export function WorkLogList({
           </tbody>
         </table>
 
-        {/* 페이지네이션 */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
             <span>
-              {page} / {totalPages} 페이지 · 총 {total.toLocaleString("ko-KR")}건
+              {page} / {totalPages} 페이지 · 총{" "}
+              {total.toLocaleString("ko-KR")}건
             </span>
             <div className="flex gap-1">
               <Link
@@ -98,6 +95,7 @@ export function WorkLogList({
                   selectedId ? `&log=${selectedId}` : ""
                 }`}
                 aria-disabled={page <= 1}
+                prefetch={false}
                 className={buttonVariants({
                   variant: "outline",
                   size: "sm",
@@ -112,6 +110,7 @@ export function WorkLogList({
                   page + 1,
                 )}${selectedId ? `&log=${selectedId}` : ""}`}
                 aria-disabled={page >= totalPages}
+                prefetch={false}
                 className={buttonVariants({
                   variant: "outline",
                   size: "sm",

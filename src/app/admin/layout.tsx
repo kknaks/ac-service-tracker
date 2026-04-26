@@ -22,14 +22,14 @@ export default async function AdminLayout({
   return (
     <div className="min-h-svh flex bg-muted/30">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-60 flex-col border-r bg-background">
+      <aside className="hidden md:flex w-60 sticky top-0 h-svh flex-col border-r bg-background">
         <div className="px-6 py-5">
           <h1 className="text-lg font-semibold tracking-tight">
             A/C Service Tracker
           </h1>
         </div>
         <Separator />
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           <NavItem href="/admin/upload" icon={Upload}>
             배정/AS 비교
           </NavItem>
