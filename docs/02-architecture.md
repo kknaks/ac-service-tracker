@@ -62,7 +62,7 @@ flowchart LR
 
 ## 배포 구조
 
-- **Vercel** — Next.js 호스팅, 환경변수: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`(Server Action 전용)
+- **Vercel** — Next.js 호스팅, 환경변수: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`(Server Action 전용)
 - **Supabase Cloud** — Free tier 시작, 마이그레이션은 `supabase/migrations` 로 버전 관리
 - **도메인/SSL** — Vercel 기본 도메인으로 시작, 운영 단계에서 사용자 도메인 부착
 
@@ -76,7 +76,7 @@ flowchart LR
 
 ## 보안 가드
 
-- 클라이언트엔 **anon key** 만 노출, `service_role` 은 Server Action 전용.
+- 클라이언트엔 **publishable key** 만 노출, `secret key` 는 Server Action 전용.
 - RLS 미설정 테이블은 배포 전 차단 (Supabase 대시보드 경고 활용).
 - `xlsx` 파싱은 Server Action 내부에서만 수행 (클라이언트 파싱 금지 — 데이터 유출 방지).
 

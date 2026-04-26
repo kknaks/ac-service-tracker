@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env*.example
 
 # vercel
 .vercel
@@ -39,3 +40,45 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# === clean_scheduler additions ===
+node_modules/
+.pnp
+.pnp.js
+.pnpm-store/
+
+.next/
+out/
+build/
+dist/
+
+coverage/
+.nyc_output/
+
+# env / secrets
+.env
+.env.local
+.env*.local
+
+# claude (project)
+.claude/settings.local.json
+
+# supabase
+supabase/.branches
+supabase/.temp
+**/supabase/.env
+
+# obsidian
+.obsidian/
+
+# editor / OS
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# logs
+*.log
+pnpm-debug.log*
+

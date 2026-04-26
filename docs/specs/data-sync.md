@@ -9,11 +9,14 @@ parent: "[[../README]]"
 # Spec · 데이터 동기화 (AS접수 ↔ 작업배정)
 
 상위: [[../README]]
-관련: [[../03-data-model]] · [[../04-pages]] · [[../05-flows]] · [[../08-code-structure]]
+관련: [[../03-data-model]] · [[../04-pages]] · [[../05-flows]] · [[../08-code-structure]] · [[page-upload]] · [[../roadmap/v2-field]]
+
+> ⚠️ **현재 (v1)**: 클라이언트의 `lib/comparison.ts` 가 즉시 비교만 수행. **DB 저장 / drift_alerts / 자동 해소 없음**. 페이지 닫으면 결과 사라짐.
+> **v2 합류 시**: 본 문서의 backend 흐름 (uploads · 양쪽 테이블 upsert · drift_alerts insert/auto-resolve) 활성. [[../roadmap/v2-field]] A 절 참조.
 
 ## 목적
 
-AS접수리스트와 작업배정관리 두 엑셀에서 같은 접수번호를 가진 row 의 **요청일자** 차이를 자동 탐지하고, AS 엑셀의 수동 갱신 필요성을 관리자에게 알린다. 갱신이 반영되면 자동으로 해소(closed) 한다.
+AS접수리스트와 작업배정관리 두 엑셀에서 같은 접수번호를 가진 row 의 **요청일자** 차이를 자동 탐지하고, AS 엑셀의 수동 갱신 필요성을 관리자에게 알린다. (v2 에서) 갱신이 반영되면 자동으로 해소(closed) 한다.
 
 ## 도메인 배경
 
@@ -89,8 +92,12 @@ sequenceDiagram
 | 엑셀 컬럼 | DB 컬럼 | 비고 |
 |---|---|---|
 | `접수 번호` (col 9) | `external_no` | 정규식 `^AR\d+$` 검증 |
-| `A/S요청일자` (col 6) | `request_date` | date 정규화 |
-| `고객명` (col 15) | `customer_name` | |
+| `접수일자` (col 2) | `received_date` | date 정규화 |
+| `A/S요청일자` (col 6) | `request_date` | date 정규화 — drift 비교 대상 |
+| `약속시간` (col 8) | `promised_time` | text. sentinel datetime 의 시간만 의미 (예: `"12:00"`) |
+| `계약번호` (col 10) | `contract_no` | text (예: `CT2603162411842`) |
+| `고객번호` (col 12) | `customer_no` | text — AS 측에만 존재 |
+| `고객명` (col 15) | `customer_name` | text |
 | (그 외 모든 컬럼) | `raw.<원본 헤더명>` | jsonb 평탄화 |
 
 ### 작업배정관리 → `work_assignments`
@@ -98,8 +105,11 @@ sequenceDiagram
 | 엑셀 컬럼 | DB 컬럼 | 비고 |
 |---|---|---|
 | `접수번호` (col 21) | `external_no` | 정규식 `^AR\d+$` 검증 |
-| `요청일자` (col 3) | `request_date` | date 정규화 |
-| `고객명` (col 16) | `customer_name` | |
+| `요청일자` (col 3) | `request_date` | date 정규화 — drift 비교 대상 |
+| `주문일자` (col 2) | `order_date` | date 정규화 |
+| `기사 약속시간` (col 4) | `promised_time` | text. sentinel datetime 의 시간만 의미 (예: `"12:00"`) |
+| `계약번호` (col 20) | `contract_no` | text (예: `CT2603162411842`) |
+| `고객명` (col 16) | `customer_name` | text |
 | (그 외 모든 컬럼) | `raw.<원본 헤더명>` | jsonb. 멀티헤더는 `'변경 전.기사 명'` 같이 dot-prefix 로 평탄화 |
 
 ## drift 판정 알고리즘
@@ -168,46 +178,13 @@ const AssignmentRowSchema = z.object({
 
 ## 화면 spec
 
-### `/admin/upload`
+페이지별 상세 설계는 별도 spec 으로 분리. 본 문서는 백엔드 로직(파싱·적재·drift 알고리즘) 에 집중.
 
-**상태 머신**
-
-```
-idle ─(파일 선택)─▶ ready ─(클릭)─▶ processing ─▶ result
-                                              └─▶ error
-```
-
-**컴포넌트 구성**
-
-```
-<UploadPage>
-  <DualDropZone>
-    <DropSlot kind="as_reception" />
-    <DropSlot kind="work_assignment" />
-  </DualDropZone>
-  <SubmitBar>           // 한 파일만이라도 있으면 활성, 안내 문구 변동
-  <ResultCard>          // processing → 결과
-    <CountTile label="신규 적재" />
-    <CountTile label="갱신" />
-    <CountTile label="drift 신규 open" />
-    <CountTile label="자동 해소" />
-    <ErrorList />
-  </ResultCard>
-</UploadPage>
-```
-
-### `/admin/dashboard`
-
-- 상단 알림 카드: **미해소 drift 수** (open만, `resolved_at IS NULL`).
-  - 클릭 → `/admin/alerts`
-- 본문: 최근 업로드 이력 5건, 적재 통계.
-
-### `/admin/alerts`
-
-- 미해소 drift 리스트 — 컬럼: `접수번호`, `kind`, `고객명`, `AS 요청일자`, `작업배정 요청일자`, `검출일시`
-- 행 클릭 → 상세 패널 (raw 비교, 갱신 가이드 안내)
-- 정렬: 검출일시 내림차순 기본
-- (미래) 강제 dismiss 액션
+| 페이지 | 상세 |
+|---|---|
+| `/admin/upload` | [[page-upload]] — 3-step 좌우 grid + 자동 분석 + 미니멀 미리보기 |
+| `/admin/dashboard` | [[page-dashboard]] |
+| `/admin/alerts` | [[page-alerts]] |
 
 ## Server Action 시그니처
 

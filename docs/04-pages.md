@@ -21,11 +21,10 @@ app/
 ├── (auth)/
 │   └── login/page.tsx        # 로그인 (단일 관리자)
 │
-└── (admin)/                  # 관리자 영역 (middleware 가드)
-    ├── layout.tsx            # 데스크탑 사이드바 + 모바일 햄버거
-    ├── dashboard/page.tsx    # 전체 현황 + drift 알림 배지
-    ├── upload/page.tsx       # 두 엑셀 동시 업로드 + 결과 ([[specs/data-sync]])
-    └── alerts/page.tsx       # 미해소 drift 리스트 ([[specs/data-sync]])
+└── admin/                  # 관리자 영역 (middleware 가드)
+    ├── layout.tsx            # 데스크탑 사이드바 (A/C Service Tracker) + 모바일 햄버거
+    ├── upload/page.tsx       # 3-step 업로드 + 클라이언트 비교 ([[specs/page-upload]])
+    └── alerts/page.tsx       # v2 데이터 연결 시 활성 ([[specs/page-alerts]])
 ```
 
 > 🔮 **v2 추가 예정** — `(field)/reservations`, `(field)/reservations/[id]`, `(field)/schedule`, `(admin)/members` 등. [[roadmap/v2-field]] 참조.
@@ -36,9 +35,9 @@ app/
 
 | 경로 | 비로그인 | 로그인 (admin) |
 |---|---|---|
-| `/login` | ✅ | → `/admin/dashboard` |
-| `/(admin)/*` | → `/login` | ✅ |
-| `/` | → `/login` | → `/admin/dashboard` |
+| `/login` | ✅ | → `/admin/upload` |
+| `/admin/*` | → `/login` | ✅ |
+| `/` | → `/login` | → `/admin/upload` |
 
 > v1 은 단일 관리자라 역할 분기 없음. v2 합류 시 `field` 역할 + `(field)/*` 가드 추가 ([[roadmap/v2-field]]).
 
@@ -55,9 +54,8 @@ app/
 
 | 페이지 | 핵심 컴포넌트 | 데이터 |
 |---|---|---|
-| `/admin/dashboard` | `<DriftAlertBanner>`, `<RecentUploads>`, `<StatsCards>` | RSC + drift open count |
-| `/admin/upload` | `<DualDropZone>` (AS+작업배정), `<UploadResultReport>` | Server Action `processSync` 결과 ([[specs/data-sync]]) |
-| `/admin/alerts` | `<DriftList>`, `<DriftDetailDrawer>` | drift_alerts open ([[specs/data-sync]]) |
+| `/admin/upload` | `<UploadFlow>` (3-step) — `<Step1Assignment>` / `<Step2As>` / `<Step3Compare>` | client-side `compareRows()` ([[specs/page-upload]]) |
+| `/admin/alerts` | `<DriftList>`, `<DriftDetailDrawer>` | drift_alerts (v2 — 현재 미사용) |
 
 ## TBD
 

@@ -14,7 +14,7 @@ parent: "[[README]]"
 
 | 영역 | 선택 | 이유 |
 |---|---|---|
-| 프레임워크 | **Next.js 15 (App Router)** | RSC + Server Actions로 별도 백엔드 불필요 |
+| 프레임워크 | **Next.js 16 (App Router)** | RSC + Server Actions로 별도 백엔드 불필요. Next 16 breaking changes 는 루트 `AGENTS.md` 참조 |
 | BaaS | **Supabase** | Auth + Postgres(RLS) + Realtime 일체형 |
 | UI | **Tailwind CSS + shadcn/ui** | 반응형, 모바일 친화, 커스터마이즈 용이 |
 | 엑셀 파싱 | **SheetJS (`xlsx`)** | Server Action에서 파싱 → 그대로 폐기 |

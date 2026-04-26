@@ -1,6 +1,6 @@
 ---
 title: 페이지 spec — /admin/dashboard
-status: agreed
+status: draft
 tags: [spec, page, dashboard, admin]
 updated: 2026-04-26
 parent: "[[../README]]"
@@ -9,7 +9,10 @@ parent: "[[../README]]"
 # Spec · `/admin/dashboard`
 
 상위: [[../README]]
-관련: [[../04-pages]] · [[specs/data-sync]] · [[../03-data-model]] · [[../08-code-structure]]
+관련: [[../04-pages]] · [[data-sync]] · [[../03-data-model]] · [[../08-code-structure]]
+
+> 🔮 **v1 에서는 라우트/코드 자체 제거됨** (사이드바 nav 항목 + 라우트 폴더 + 컴포넌트). v1 진입은 로그인 → `/admin/upload` 직행.
+> **v2 에서 DB 영속화 합류 시 본 spec 의 화면을 다시 구현**. [[../roadmap/v2-field]] B 절 참조.
 
 ## 목적
 

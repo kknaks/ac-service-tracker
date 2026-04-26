@@ -41,10 +41,10 @@ if (session && isLoginPath) return redirect('/admin/dashboard');
 
 v1 은 단일 관리자라 정책이 단순하다. 두 가지 접근이 가능:
 
-### 옵션 A — Service Role 단독 (권장)
+### 옵션 A — Secret Key 단독 (권장)
 
-- 모든 mutation 은 Server Action 에서 `service_role` 키로 실행
-- 클라이언트는 anon 키로 SELECT 만 (또는 SELECT 도 Server Action 경유)
+- 모든 mutation 은 Server Action 에서 `SUPABASE_SECRET_KEY` 로 실행 (구 service_role)
+- 클라이언트는 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` 로 SELECT 만 (구 anon)
 - 테이블 RLS 는 "비로그인 차단" 만 가져감
 
 ```sql
@@ -73,10 +73,10 @@ CREATE POLICY logged_in_select_only ON as_receptions
 
 | 작업 | 사용 키 | 이유 |
 |---|---|---|
-| 클라이언트 SELECT (RSC 등) | anon | RLS 의 `auth.uid() IS NOT NULL` 통과 |
-| 모든 mutation (upsert, drift_alerts insert/update) | service_role | Server Action 내부에서만 |
+| 클라이언트 SELECT (RSC 등) | publishable | RLS 의 `auth.uid() IS NOT NULL` 통과 |
+| 모든 mutation (upsert, drift_alerts insert/update) | secret | Server Action 내부에서만 |
 
-> `service_role` 은 절대 클라이언트 번들에 포함하지 않는다. `process.env.SUPABASE_SERVICE_ROLE_KEY` 는 Server Action / middleware 에서만 접근.
+> `SUPABASE_SECRET_KEY` 는 절대 클라이언트 번들에 포함하지 않는다. `process.env.SUPABASE_SECRET_KEY` 는 Server Action / middleware 에서만 접근. (구 `service_role` 시스템과 호환)
 
 ## 미들웨어 가드 vs RLS
 

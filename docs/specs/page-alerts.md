@@ -1,6 +1,6 @@
 ---
 title: 페이지 spec — /admin/alerts
-status: agreed
+status: draft
 tags: [spec, page, alerts, drift, admin]
 updated: 2026-04-26
 parent: "[[../README]]"
@@ -9,7 +9,9 @@ parent: "[[../README]]"
 # Spec · `/admin/alerts`
 
 상위: [[../README]]
-관련: [[../04-pages]] · [[specs/data-sync]] · [[specs/page-dashboard]] · [[../03-data-model]] · [[../08-code-structure]]
+관련: [[../04-pages]] · [[data-sync]] · [[page-dashboard]] · [[../03-data-model]] · [[../08-code-structure]]
+
+> 🔮 **v1 미사용** — 현재 v1 은 in-memory 도구라 `drift_alerts` 테이블이 비어있어 알림 페이지도 빈 상태. **v2 에서 DB 영속화 합류 시 본 spec 활성**. [[../roadmap/v2-field]] B 절 참조.
 
 ## 목적
 
