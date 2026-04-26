@@ -1,9 +1,7 @@
 import { contactExtractionRepo } from "@/repositories/contact_extraction.repo";
 import { ExcelAddModal } from "@/components/contacts/excel-add-modal";
-import {
-  WorkLogList,
-  WORK_LOG_PAGE_SIZE,
-} from "@/components/contacts/work-log-list";
+import { WorkLogList } from "@/components/contacts/work-log-list";
+import { WORK_LOG_PAGE_SIZE } from "@/components/contacts/constants";
 import { WorkLogDetail } from "@/components/contacts/work-log-detail";
 
 export default async function ContactsPage({
@@ -45,8 +43,7 @@ export default async function ContactsPage({
         <div>
           <h1 className="text-2xl font-bold tracking-tight">신규 접수</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            박진영 담당의 신규 접수번호를 추출해 컨택 전화번호 안내용
-            엑셀로 내려받습니다.
+            신규 접수번호를 추출해 컨택 전화번호 안내용 엑셀로 내려받습니다.
           </p>
         </div>
         <ExcelAddModal />
