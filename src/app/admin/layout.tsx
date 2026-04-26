@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/actions/auth.actions";
+import { MobileNav } from "@/components/admin/mobile-nav";
 
 export default async function AdminLayout({
   children,
@@ -55,10 +56,13 @@ export default async function AdminLayout({
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-10 flex items-center justify-between border-b bg-background px-4 py-3">
-        <h1 className="text-base font-semibold">A/C Service Tracker</h1>
+      <div className="md:hidden fixed top-0 inset-x-0 z-10 flex items-center justify-between gap-2 border-b bg-background px-3 py-2">
+        <div className="flex items-center gap-2">
+          <MobileNav />
+          <h1 className="text-base font-semibold">A/C Service Tracker</h1>
+        </div>
         <form action={signOut}>
-          <Button type="submit" variant="ghost" size="sm">
+          <Button type="submit" variant="ghost" size="icon-sm" aria-label="로그아웃">
             <LogOut className="h-4 w-4" />
           </Button>
         </form>
