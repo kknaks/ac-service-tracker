@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import Script from "next/script";
 import { Upload, Phone, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -12,6 +13,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const supabase = await createClient();
   const {
     data: { user },
@@ -21,9 +23,27 @@ export default async function AdminLayout({
   if (!user) redirect("/login");
 
   return (
-    <div className="min-h-svh flex bg-muted/30">
-      {/* Sidebar */}
-      <aside className="hidden md:flex w-60 sticky top-0 h-svh flex-col border-r bg-background">
+    <>
+      {gaMeasurementId ? (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga-admin-layout-pageview" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${gaMeasurementId}', { send_page_view: false });
+              gtag('event', 'page_view', { page_path: '/admin' });
+            `}
+          </Script>
+        </>
+      ) : null}
+      <div className="min-h-svh flex bg-muted/30">
+        {/* Sidebar */}
+        <aside className="hidden md:flex w-60 sticky top-0 h-svh flex-col border-r bg-background">
         <div className="px-6 py-5">
           <h1 className="text-lg font-semibold tracking-tight">
             A/C Service Tracker
@@ -53,26 +73,27 @@ export default async function AdminLayout({
             </Button>
           </form>
         </div>
-      </aside>
+        </aside>
 
-      {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-10 flex items-center justify-between gap-2 border-b bg-background px-3 py-2">
-        <div className="flex items-center gap-2">
-          <MobileNav />
-          <h1 className="text-base font-semibold">A/C Service Tracker</h1>
+        {/* Mobile top bar */}
+        <div className="md:hidden fixed top-0 inset-x-0 z-10 flex items-center justify-between gap-2 border-b bg-background px-3 py-2">
+          <div className="flex items-center gap-2">
+            <MobileNav />
+            <h1 className="text-base font-semibold">A/C Service Tracker</h1>
+          </div>
+          <form action={signOut}>
+            <Button type="submit" variant="ghost" size="icon-sm" aria-label="로그아웃">
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </form>
         </div>
-        <form action={signOut}>
-          <Button type="submit" variant="ghost" size="icon-sm" aria-label="로그아웃">
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </form>
-      </div>
 
-      {/* Main */}
-      <main className="flex-1 min-w-0 p-4 md:p-8 mt-12 md:mt-0">
-        {children}
-      </main>
-    </div>
+        {/* Main */}
+        <main className="flex-1 min-w-0 p-4 md:p-8 mt-12 md:mt-0">
+          {children}
+        </main>
+      </div>
+    </>
   );
 }
 
